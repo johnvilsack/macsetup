@@ -1,25 +1,29 @@
 #!/bin/bash
 
-DOCK_PLIST="$HOME/Library/Preferences/com.apple.dock.plist"
+# Temporary clean Dock plist
+TMP_PLIST="/tmp/com.apple.dock.plist.$$"
 
-/usr/libexec/PlistBuddy -c "Clear persistent-apps" "$DOCK_PLIST"
+# Create a clean plist file
+/usr/libexec/PlistBuddy -c "Clear" "$TMP_PLIST" 2>/dev/null
+/usr/libexec/PlistBuddy -c "Add persistent-apps array" "$TMP_PLIST"
 
-# App list with full paths
-APPS=(
-  "/Applications/Safari.app"
-  "/System/Applications/App Store.app"
-  "/System/Applications/System Settings.app"
-)
+function add_app {
+  APP_PATH="$1"
+  INDEX=$(/usr/libexec/PlistBuddy -c "Print persistent-apps" "$TMP_PLIST" 2>/dev/null | grep -c "Dict {")
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX dict" "$TMP_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data dict" "$TMP_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data dict" "$TMP_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data:_CFURLString string file://${APP_PATH}" "$TMP_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data:_CFURLStringType integer 15" "$TMP_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-type string file-tile" "$TMP_PLIST"
+}
 
-INDEX=0
-for APP_PATH in "${APPS[@]}"; do
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX dict" "$DOCK_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data dict" "$DOCK_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data dict" "$DOCK_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data:_CFURLString string file://${APP_PATH}" "$DOCK_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data:_CFURLStringType integer 15" "$DOCK_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-type string file-tile" "$DOCK_PLIST"
-  INDEX=$((INDEX + 1))
-done
+# Apps to keep
+add_app "/Applications/Safari.app"
+add_app "/System/Applications/App Store.app"
+add_app "/System/Applications/System Settings.app"
 
+# Replace actual plist
+cp "$TMP_PLIST" "$HOME/Library/Preferences/com.apple.dock.plist"
 killall Dock
+rm "$TMP_PLIST"
