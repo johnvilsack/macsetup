@@ -1,30 +1,21 @@
 #!/bin/bash
 
-# Reset Dock
-defaults write com.apple.dock persistent-apps -array
+DOCK_PLIST="$HOME/Library/Preferences/com.apple.dock.plist"
 
-# Function to add an app to the Dock
-add_app_to_dock() {
-  app_path="$1"
-  if [ -e "$app_path" ]; then
-    defaults write com.apple.dock persistent-apps -array-add "{
-      tile-data = {
-        file-data = {
-          _CFURLString = \"file://$app_path\";
-          _CFURLStringType = 15;
-        };
-      };
-      tile-type = \"file-tile\";
-    }"
-  else
-    echo "App not found: $app_path"
-  fi
+/usr/libexec/PlistBuddy -c "Clear persistent-apps" "$DOCK_PLIST"
+
+function add_app {
+  APP_PATH="$1"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:0 dict" "$DOCK_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data dict" "$DOCK_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data:file-data dict" "$DOCK_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data:file-data:_CFURLString string file://${APP_PATH}" "$DOCK_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data:file-data:_CFURLStringType integer 15" "$DOCK_PLIST"
+  /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-type string file-tile" "$DOCK_PLIST"
 }
 
-# Add desired apps (exact paths)
-add_app_to_dock "/Applications/Safari.app"
-add_app_to_dock "/System/Applications/App Store.app"
-add_app_to_dock "/System/Applications/System Settings.app"
+add_app "/Applications/Safari.app"
+add_app "/System/Applications/App Store.app"
+add_app "/System/Applications/System Settings.app"
 
-# Restart Dock
 killall Dock
