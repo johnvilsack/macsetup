@@ -1,44 +1,30 @@
 #!/bin/bash
 
-# Allowed apps – keep these in the Dock
-ALLOWED_APPS=(
-  "Safari.app"
-  "App Store.app"
-  "System Settings.app"
-)
-
-# Get the current dock apps
-CURRENT_APPS=$(defaults read com.apple.dock persistent-apps | grep _CFURLString\" | awk -F 'file://' '{print $2}' | sed 's/\";//' | xargs -I {} basename "{}")
-
-# Iterate and remove anything not in allowed list
-for APP in $CURRENT_APPS; do
-  if [[ ! " ${ALLOWED_APPS[*]} " =~ " $APP " ]]; then
-    break
-  fi
-done
-
-# Re-add allowed apps
+# Reset Dock
 defaults write com.apple.dock persistent-apps -array
-for APP in "${ALLOWED_APPS[@]}"; do
-  APP_PATH="/Applications/$APP"
-  if [ -e "$APP_PATH" ]; then
-    defaults write com.apple.dock persistent-apps -array-add "<dict>
-      <key>tile-data</key>
-      <dict>
-        <key>file-data</key>
-        <dict>
-          <key>_CFURLString</key>
-          <string>file://$APP_PATH/</string>
-          <key>_CFURLStringType</key>
-          <integer>15</integer>
-        </dict>
-      </dict>
-      <key>tile-type</key>
-      <string>file-tile</string>
-    </dict>"
+
+# Function to add an app to the Dock
+add_app_to_dock() {
+  app_path="$1"
+  if [ -e "$app_path" ]; then
+    defaults write com.apple.dock persistent-apps -array-add "{
+      tile-data = {
+        file-data = {
+          _CFURLString = \"file://$app_path\";
+          _CFURLStringType = 15;
+        };
+      };
+      tile-type = \"file-tile\";
+    }"
+  else
+    echo "App not found: $app_path"
   fi
-done
+}
 
-# Restart Dock to apply changes
+# Add desired apps (exact paths)
+add_app_to_dock "/Applications/Safari.app"
+add_app_to_dock "/System/Applications/App Store.app"
+add_app_to_dock "/System/Applications/System Settings.app"
+
+# Restart Dock
 killall Dock
-
