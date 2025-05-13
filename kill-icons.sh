@@ -58,18 +58,21 @@ done <<< "$all_dock_bundle_ids"
 
 echo "Adding Safari, App Store, and System Settings to the dock..."
 
-# Function to add an app to the dock
+# Function to add an app to the dock using 'open -a' and then pinning it
 add_dock_app() {
-  local app_path="$1"
-  osascript -e "tell application \"System Events\" to tell application \"Dock\" to create dock tile at end with properties {file path:\"$app_path\"}"
+  local app_name="$1"
+  open -a "$app_name"
+  sleep 2 # Give the app time to open
+  osascript -e "tell application \"System Events\" to tell application \"Dock\" to pin application \"$app_name\""
+  osascript -e "tell application \"$app_name\" to quit"
 }
 
 # Add the desired applications
-add_dock_app "/Applications/Safari.app"
-add_dock_app "/Applications/App Store.app"
-add_dock_app "/System/Applications/System Settings.app"
+add_dock_app "Safari"
+add_dock_app "App Store"
+add_dock_app "System Settings"
 
-# Kill the Dock to apply changes
+# Kill the Dock to apply changes (might not be strictly needed with the 'open' method)
 killall Dock
 
 echo "Dock configuration complete."
