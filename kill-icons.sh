@@ -1,29 +1,75 @@
 #!/bin/bash
 
-# Temporary clean Dock plist
-TMP_PLIST="/tmp/com.apple.dock.plist.$$"
+# Get the current dock preferences
+dock_settings=$(defaults read com.apple.dock persistent-apps)
 
-# Create a clean plist file
-/usr/libexec/PlistBuddy -c "Clear" "$TMP_PLIST" 2>/dev/null
-/usr/libexec/PlistBuddy -c "Add persistent-apps array" "$TMP_PLIST"
-
-function add_app {
-  APP_PATH="$1"
-  INDEX=$(/usr/libexec/PlistBuddy -c "Print persistent-apps" "$TMP_PLIST" 2>/dev/null | grep -c "Dict {")
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX dict" "$TMP_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data dict" "$TMP_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data dict" "$TMP_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data:_CFURLString string file://${APP_PATH}" "$TMP_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-data:file-data:_CFURLStringType integer 15" "$TMP_PLIST"
-  /usr/libexec/PlistBuddy -c "Add persistent-apps:$INDEX:tile-type string file-tile" "$TMP_PLIST"
+# Function to extract the bundle identifier from a dock item
+get_bundle_id() {
+  local item="$1"
+  echo "$item" | grep -oP '"file-data" = \{[^}]*\};' | grep -oP '"bundle-identifier" = "[^"]*"' | cut -d '"' -f 4
 }
 
-# Apps to keep
-add_app "/Applications/Safari.app"
-add_app "/System/Applications/App Store.app"
-add_app "/System/Applications/System Settings.app"
+# Function to remove an app from the dock settings
+remove_dock_item() {
+  local bundle_id_to_remove="$1"
+  local new_dock_items=""
+  local found=0
 
-# Replace actual plist
-cp "$TMP_PLIST" "$HOME/Library/Preferences/com.apple.dock.plist"
+  while IFS= read -r line; do
+    if [[ "$line" == *"{"* ]]; then
+      current_item="$line"
+      while IFS= read -r next_line; do
+        current_item="$current_item"$'\n'"$next_line"
+        if [[ "$next_line" == *"}"* ]]; then
+          item_bundle_id=$(get_bundle_id "$current_item")
+          if [[ "$item_bundle_id" != "$bundle_id_to_remove" ]]; then
+            if [[ -n "$new_dock_items" ]]; then
+              new_dock_items="$new_dock_items,"
+            fi
+            new_dock_items="$new_dock_items"$'\n'"$current_item"
+          else
+            found=1
+          fi
+          break
+        fi
+      done
+    fi
+  done <<< "$dock_settings"
+
+  if [[ "$found" -gt 0 ]]; then
+    defaults write com.apple.dock persistent-apps "<array>$new_dock_items</array>"
+  fi
+}
+
+# --- Main Script ---
+
+echo "Removing all icons from the dock..."
+
+# Get all current app bundle identifiers in the dock
+all_dock_bundle_ids=$(echo "$dock_settings" |
+                        grep -oP '"file-data" = \{[^}]*\};' |
+                        grep -oP '"bundle-identifier" = "[^"]*"' |
+                        cut -d '"' -f 4)
+
+# Remove each one
+while IFS= read -r bundle_id; do
+  remove_dock_item "$bundle_id"
+done <<< "$all_dock_bundle_ids"
+
+echo "Adding Safari, App Store, and System Settings to the dock..."
+
+# Function to add an app to the dock
+add_dock_app() {
+  local app_path="$1"
+  osascript -e "tell application \"System Events\" to tell application \"Dock\" to create dock tile at end with properties {file path:\"$app_path\"}"
+}
+
+# Add the desired applications
+add_dock_app "/Applications/Safari.app"
+add_dock_app "/Applications/App Store.app"
+add_dock_app "/System/Applications/System Settings.app"
+
+# Kill the Dock to apply changes
 killall Dock
-rm "$TMP_PLIST"
+
+echo "Dock configuration complete."
