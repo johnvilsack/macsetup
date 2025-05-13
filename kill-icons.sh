@@ -13,7 +13,6 @@ CURRENT_APPS=$(defaults read com.apple.dock persistent-apps | grep _CFURLString\
 # Iterate and remove anything not in allowed list
 for APP in $CURRENT_APPS; do
   if [[ ! " ${ALLOWED_APPS[*]} " =~ " $APP " ]]; then
-    osascript -e "tell application \"Dock\" to set persistent apps to {}"
     break
   fi
 done
