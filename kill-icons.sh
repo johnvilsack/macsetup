@@ -1,28 +1,60 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Clear all persistent apps from the Dock
+# 1) Clear all persistent apps from the Dock
 defaults write com.apple.dock persistent-apps -array
 
-# List of full app paths
-apps=(
-  "/System/Applications/Safari.app"
-  "/System/Applications/System Settings.app"
-  "/System/Applications/App Store.app"
-)
+# 2) Add Safari
+defaults write com.apple.dock persistent-apps -array-add \
+'<dict>
+   <key>tile-data</key>
+   <dict>
+     <key>file-data</key>
+     <dict>
+       <key>_CFURLString</key>
+       <string>file:///System/Applications/Safari.app</string>
+       <key>_CFURLStringType</key>
+       <integer>0</integer>
+     </dict>
+   </dict>
+   <key>tile-type</key>
+   <string>file-tile</string>
+ </dict>'
 
-# Loop and add each app
-for app in "${apps[@]}"; do
-  uri="file://${app// /%20}"
-  defaults write com.apple.dock persistent-apps -array-add \
-    "{\"tile-data\" = {\"file-data\" = {\"_CFURLString\" = \"$uri\"; \"_CFURLStringType\" = 15;};}; \"tile-type\" = \"file-tile\";}"
-done
+# 3) Add App Store
+defaults write com.apple.dock persistent-apps -array-add \
+'<dict>
+   <key>tile-data</key>
+   <dict>
+     <key>file-data</key>
+     <dict>
+       <key>_CFURLString</key>
+       <string>file:///System/Applications/App Store.app</string>
+       <key>_CFURLStringType</key>
+       <integer>0</integer>
+     </dict>
+   </dict>
+   <key>tile-type</key>
+   <string>file-tile</string>
+ </dict>'
 
-#Current Apps
-echo '###'
-defaults read com.apple.dock persistent-apps | grep _CFURLString
-echo '###'
+# 4) Add System Settings
+defaults write com.apple.dock persistent-apps -array-add \
+'<dict>
+   <key>tile-data</key>
+   <dict>
+     <key>file-data</key>
+     <dict>
+       <key>_CFURLString</key>
+       <string>file:///System/Applications/System Settings.app</string>
+       <key>_CFURLStringType</key>
+       <integer>0</integer>
+     </dict>
+   </dict>
+   <key>tile-type</key>
+   <string>file-tile</string>
+ </dict>'
 
-# Apply changes
+# 5) Restart the Dock to apply changes
 killall Dock
 
-echo "Dock icons updated."
+echo "Dock was reset to: Safari, App Store, System Settings."
