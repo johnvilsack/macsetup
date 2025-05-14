@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Removing all icons from the Dock..."
+echo "Removing..."
 defaults write com.apple.dock persistent-apps -array
 killall Dock
 
@@ -21,5 +21,5 @@ defaults write com.apple.dock persistent-apps -array-add \
 </dict>'
 
 killall Dock
-echo "Safari"
+echo "Safari added"
 
