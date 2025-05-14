@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Removing..."
+echo "Removing Icons..."
 defaults write com.apple.dock persistent-apps -array
 killall Dock
 
@@ -11,7 +11,7 @@ defaults write com.apple.dock persistent-apps -array-add \
     <key>file-data</key>
     <dict>
       <key>_CFURLString</key>
-      <string>/System/Applications/Safari.app</string>
+      <string>/Applications/Safari.app</string>
       <key>_CFURLStringType</key>
       <integer>0</integer>
     </dict>
