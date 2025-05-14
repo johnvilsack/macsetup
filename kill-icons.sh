@@ -1,21 +1,19 @@
-#!/usr/bin/env bash
 
-# 1) Clear all icons
+#!/bin/bash
+
+echo "Removing all icons from the Dock..."
 defaults write com.apple.dock persistent-apps -array
 
-# 2) Add Safari
-defaults write com.apple.dock persistent-apps -array-add \
-'{"tile-data"={"file-data"={"_CFURLString"="file:///System/Applications/Safari.app";"_CFURLStringType"=15;};};"tile-type"="file-tile";}'
+echo "Adding Safari to the Dock..."
+defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="file-tile";"tile-data"={"file-label"="Safari";"bundle-identifier"="com.apple.Safari";"file-data"={"_CFURLString"="/Applications/Safari.app";"_CFURLStringType"=0;};};}' 
 
-# 3) Add App Store
-defaults write com.apple.dock persistent-apps -array-add \
-'{"tile-data"={"file-data"={"_CFURLString"="file:///System/Applications/App%20Store.app";"_CFURLStringType"=15;};};"tile-type"="file-tile";}'
+echo "Adding App Store to the Dock..."
+defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="file-tile";"tile-data"={"file-label"="App Store";"bundle-identifier"="com.apple.AppStore";"file-data"={"_CFURLString"="/System/Applications/App Store.app";"_CFURLStringType"=0;};};}' 
 
-# 4) Add System Settings
-defaults write com.apple.dock persistent-apps -array-add \
-'{"tile-data"={"file-data"={"_CFURLString"="file:///System/Applications/System%20Settings.app";"_CFURLStringType"=15;};};"tile-type"="file-tile";}'
+echo "Adding System Settings to the Dock..."
+defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="file-tile";"tile-data"={"file-label"="System Settings";"bundle-identifier"="com.apple.systempreferences";"file-data"={"_CFURLString"="/System/Applications/System Settings.app";"_CFURLStringType"=0;};};}' 
 
-# 5) Restart Dock
+echo "Restarting the Dock to apply changes..."
 killall Dock
 
-echo "Dock reset to: Safari, App Store, System Settings."
+echo "Done! Your Dock now has only Safari, App Store, and System Settings."
