@@ -2,8 +2,8 @@
 
 DOCK_PLIST="$HOME/Library/Preferences/com.apple.dock.plist"
 
-/usr/libexec/PlistBuddy -c "Delete persistent-apps" "$DOCK_PLIST" 2>/dev/null
-/usr/libexec/PlistBuddy -c "Add persistent-apps array" "$DOCK_PLIST"
+# Remove all persistent apps from the Dock
+defaults write com.apple.dock persistent-apps -array
 
 function add_app() {
     local APP_PATH="$1"
@@ -18,7 +18,6 @@ function add_app() {
 add_app "/System/Applications/Safari.app"
 add_app "/System/Applications/App Store.app"
 add_app "/System/Applications/System Settings.app"
-
 # Kill the Dock to apply changes
 killall Dock
 
