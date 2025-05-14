@@ -1,19 +1,23 @@
 #!/bin/bash
 
-# Remove all persistent apps from the Dock
-defaults write com.apple.dock persistent-apps -array
+DOCK_PLIST="$HOME/Library/Preferences/com.apple.dock.plist"
 
-# Add Safari
-defaults write com.apple.dock persistent-apps -array-add \
-    '{"tile-data" = {"file-data" = {"_CFURLString" = "/System/Applications/Safari.app"; "_CFURLStringType" = 0;};}; "tile-type" = "file-tile";}'
+/usr/libexec/PlistBuddy -c "Delete persistent-apps" "$DOCK_PLIST" 2>/dev/null
+/usr/libexec/PlistBuddy -c "Add persistent-apps array" "$DOCK_PLIST"
 
-# Add App Store
-defaults write com.apple.dock persistent-apps -array-add \
-    '{"tile-data" = {"file-data" = {"_CFURLString" = "/System/Applications/App Store.app"; "_CFURLStringType" = 0;};}; "tile-type" = "file-tile";}'
+function add_app() {
+    local APP_PATH="$1"
+    /usr/libexec/PlistBuddy -c "Add persistent-apps:0 dict" "$DOCK_PLIST"
+    /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data dict" "$DOCK_PLIST"
+    /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data:file-data dict" "$DOCK_PLIST"
+    /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data:file-data:_CFURLString string file://${APP_PATH}" "$DOCK_PLIST"
+    /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-data:file-data:_CFURLStringType integer 15" "$DOCK_PLIST"
+    /usr/libexec/PlistBuddy -c "Add persistent-apps:0:tile-type string file-tile" "$DOCK_PLIST"
+}
 
-# Add System Settings (macOS Ventura and later)
-defaults write com.apple.dock persistent-apps -array-add \
-    '{"tile-data" = {"file-data" = {"_CFURLString" = "/System/Applications/System Settings.app"; "_CFURLStringType" = 0;};}; "tile-type" = "file-tile";}'
+add_app "/System/Applications/Safari.app"
+add_app "/System/Applications/App Store.app"
+add_app "/System/Applications/System Settings.app"
 
 # Kill the Dock to apply changes
 killall Dock
