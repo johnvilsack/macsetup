@@ -1,12 +1,24 @@
 #!/bin/bash
 
 echo "Removing all icons from the Dock..."
-defaults delete com.apple.dock persistent-apps
 defaults write com.apple.dock persistent-apps -array
 
-# Add Safari to the Dock
 defaults write com.apple.dock persistent-apps -array-add \
-'{"tile-data"={"file-data"={"_CFURLString"="file:///System/Applications/Safari.app";"_CFURLStringType"=15;};};"tile-type"="file-tile";}'
+'<dict>
+  <key>tile-data</key>
+  <dict>
+    <key>file-data</key>
+    <dict>
+      <key>_CFURLString</key>
+      <string>/Applications/Safari.app</string>
+      <key>_CFURLStringType</key>
+      <integer>0</integer>
+    </dict>
+  </dict>
+  <key>tile-type</key>
+  <string>file-tile</string>
+</dict>'
 
 killall Dock
+echo "Safari"
 
