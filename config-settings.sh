@@ -18,7 +18,7 @@ defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool false
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRotate -bool false
 
 # Set wallpaper to black
-osascript -e 'tell application "Finder" to set desktop picture to POSIX file "/System/Library/Desktop Pictures/Solic Colors/black.png"'
+osascript -e 'tell application "Finder" to set desktop picture to POSIX file "/System/Library/Desktop Pictures/Solid Colors/black.png"'
 
 killall SystemUIServer
 
