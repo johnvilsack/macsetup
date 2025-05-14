@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Removing Icons..."
+echo "Trying to Remove Icons..."
 defaults write com.apple.dock persistent-apps -array
 killall Dock
 
