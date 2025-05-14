@@ -1,60 +1,21 @@
 #!/usr/bin/env bash
 
-# 1) Clear all persistent apps from the Dock
+# 1) Clear all icons
 defaults write com.apple.dock persistent-apps -array
 
 # 2) Add Safari
 defaults write com.apple.dock persistent-apps -array-add \
-'<dict>
-   <key>tile-data</key>
-   <dict>
-     <key>file-data</key>
-     <dict>
-       <key>_CFURLString</key>
-       <string>file:///System/Applications/Safari.app</string>
-       <key>_CFURLStringType</key>
-       <integer>0</integer>
-     </dict>
-   </dict>
-   <key>tile-type</key>
-   <string>file-tile</string>
- </dict>'
+'{"tile-data"={"file-data"={"_CFURLString"="file:///System/Applications/Safari.app";"_CFURLStringType"=15;};};"tile-type"="file-tile";}'
 
 # 3) Add App Store
 defaults write com.apple.dock persistent-apps -array-add \
-'<dict>
-   <key>tile-data</key>
-   <dict>
-     <key>file-data</key>
-     <dict>
-       <key>_CFURLString</key>
-       <string>file:///System/Applications/App Store.app</string>
-       <key>_CFURLStringType</key>
-       <integer>0</integer>
-     </dict>
-   </dict>
-   <key>tile-type</key>
-   <string>file-tile</string>
- </dict>'
+'{"tile-data"={"file-data"={"_CFURLString"="file:///System/Applications/App%20Store.app";"_CFURLStringType"=15;};};"tile-type"="file-tile";}'
 
 # 4) Add System Settings
 defaults write com.apple.dock persistent-apps -array-add \
-'<dict>
-   <key>tile-data</key>
-   <dict>
-     <key>file-data</key>
-     <dict>
-       <key>_CFURLString</key>
-       <string>file:///System/Applications/System Settings.app</string>
-       <key>_CFURLStringType</key>
-       <integer>0</integer>
-     </dict>
-   </dict>
-   <key>tile-type</key>
-   <string>file-tile</string>
- </dict>'
+'{"tile-data"={"file-data"={"_CFURLString"="file:///System/Applications/System%20Settings.app";"_CFURLStringType"=15;};};"tile-type"="file-tile";}'
 
-# 5) Restart the Dock to apply changes
+# 5) Restart Dock
 killall Dock
 
-echo "Dock was reset to: Safari, App Store, System Settings."
+echo "Dock reset to: Safari, App Store, System Settings."
