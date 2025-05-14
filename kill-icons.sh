@@ -1,41 +1,63 @@
 #!/bin/bash
 
 echo "Removing all icons from the Dock..."
+defaults delete com.apple.dock persistent-apps
 defaults write com.apple.dock persistent-apps -array
 
-# Check for System Settings vs System Preferences based on macOS version
-if [ -d "/System/Applications/System Settings.app" ]; then
-  SYSTEM_PREFS="/System/Applications/System Settings.app"
-  SYSTEM_PREFS_NAME="System Settings"
+# Function to add app to dock with proper format
+add_app_to_dock() {
+    local app_path="$1"
+    local app_name=$(basename "$app_path" .app)
+    
+    echo "Adding $app_name to the Dock..."
+    defaults write com.apple.dock persistent-apps -array-add "<dict>
+        <key>tile-data</key>
+        <dict>
+            <key>file-data</key>
+            <dict>
+                <key>_CFURLString</key>
+                <string>$app_path</string>
+                <key>_CFURLStringType</key>
+                <integer>0</integer>
+            </dict>
+            <key>file-label</key>
+            <string>$app_name</string>
+        </dict>
+        <key>tile-type</key>
+        <string>file-tile</string>
+    </dict>"
+}
+
+# Safari - Find the actual path
+if [ -d "/Applications/Safari.app" ]; then
+    add_app_to_dock "/Applications/Safari.app"
+elif [ -d "/System/Applications/Safari.app" ]; then
+    add_app_to_dock "/System/Applications/Safari.app"
+elif [ -d "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app" ]; then
+    add_app_to_dock "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 else
-  SYSTEM_PREFS="/System/Applications/System Preferences.app"
-  SYSTEM_PREFS_NAME="System Preferences"
+    echo "Safari not found at expected locations"
 fi
 
-# Check for App Store location
+# App Store - Find the actual path
 if [ -d "/System/Applications/App Store.app" ]; then
-  APP_STORE="/System/Applications/App Store.app"
+    add_app_to_dock "/System/Applications/App Store.app"
+elif [ -d "/Applications/App Store.app" ]; then
+    add_app_to_dock "/Applications/App Store.app"
 else
-  APP_STORE="/Applications/App Store.app"
+    echo "App Store not found at expected locations"
 fi
 
-echo "Adding Safari to the Dock..."
-dockutil --add "/Applications/Safari.app" --no-restart || {
-  echo "dockutil not found, using defaults command instead"
-  defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Safari.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict><key>tile-type</key><string>file-tile</string></dict>"
-}
-
-echo "Adding App Store to the Dock..."
-dockutil --add "$APP_STORE" --no-restart || {
-  defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$APP_STORE</string><key>_CFURLStringType</key><integer>0</integer></dict></dict><key>tile-type</key><string>file-tile</string></dict>"
-}
-
-echo "Adding $SYSTEM_PREFS_NAME to the Dock..."
-dockutil --add "$SYSTEM_PREFS" --no-restart || {
-  defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$SYSTEM_PREFS</string><key>_CFURLStringType</key><integer>0</integer></dict></dict><key>tile-type</key><string>file-tile</string></dict>"
-}
+# System Settings/Preferences - Find the actual path
+if [ -d "/System/Applications/System Settings.app" ]; then
+    add_app_to_dock "/System/Applications/System Settings.app"
+elif [ -d "/System/Applications/System Preferences.app" ]; then
+    add_app_to_dock "/System/Applications/System Preferences.app"
+else
+    echo "System Settings/Preferences not found at expected locations"
+fi
 
 echo "Restarting the Dock to apply changes..."
 killall Dock
 
-echo "Done! Your Dock now has only Safari, App Store, and $SYSTEM_PREFS_NAME."
+echo "Done! Your Dock has been reset with the requested applications."
