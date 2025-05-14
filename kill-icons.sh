@@ -3,17 +3,19 @@
 # Clear all persistent apps from the Dock
 defaults write com.apple.dock persistent-apps -array
 
-# Add Safari
-defaults write com.apple.dock persistent-apps -array-add \
-    '{"tile-data" = {"file-data" = {"_CFURLString" = "file:///System/Applications/Safari.app"; "_CFURLStringType" = 15;};}; "tile-type" = "file-tile";}'
+# Define list of apps to add (name and full path)
+declare -A apps
+apps["Safari"]="/System/Applications/Safari.app"
+apps["System Settings"]="/System/Applications/System Settings.app"
+apps["App Store"]="/System/Applications/App Store.app"
 
-# Add App Store
-defaults write com.apple.dock persistent-apps -array-add \
-    '{"tile-data" = {"file-data" = {"_CFURLString" = "file:///System/Applications/App%20Store.app"; "_CFURLStringType" = 15;};}; "tile-type" = "file-tile";}'
-
-# Add System Settings
-defaults write com.apple.dock persistent-apps -array-add \
-    '{"tile-data" = {"file-data" = {"_CFURLString" = "file:///System/Applications/System%20Settings.app"; "_CFURLStringType" = 15;};}; "tile-type" = "file-tile";}'
+# Loop through and add each app to the Dock
+for name in "${!apps[@]}"; do
+    path="${apps[$name]}"
+    uri="file://${path// /%20}"
+    defaults write com.apple.dock persistent-apps -array-add \
+        "{\"tile-data\" = {\"file-data\" = {\"_CFURLString\" = \"$uri\"; \"_CFURLStringType\" = 15;};}; \"tile-type\" = \"file-tile\";}"
+done
 
 #Current Apps
 echo '###'
@@ -22,7 +24,5 @@ echo '###'
 
 # Apply changes
 killall Dock
-
-
 
 echo "Dock icons updated."
