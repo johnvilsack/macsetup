@@ -18,8 +18,8 @@ defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool false
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRotate -bool false
 
 # Enable Control Zoom Scrolling
-defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
-defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+sudo defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
 
 # Hide Spotlight Icon
 defaults write com.apple.controlcenter 'NSStatusItem Visible Siri' -bool true
