@@ -70,6 +70,11 @@ defaults write com.apple.assistant.support "Siri Data Sharing Opt-In Status" -in
 defaults write com.apple.assistant.support "Assistant Enabled" -bool false
 defaults write com.apple.assistant.support "SiriServerLoggingEnabled" -bool false
 
+# Fastest key repeat rate
+defaults write -g KeyRepeat -int 1
+
+# Shortest delay before key repeat starts
+defaults write -g InitialKeyRepeat -int 10
 
 ## SOFTWARE UPDATES 
 
