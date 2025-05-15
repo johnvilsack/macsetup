@@ -79,16 +79,16 @@ defaults write -g InitialKeyRepeat -int 10
 ## SOFTWARE UPDATES 
 
 # 1. Automatically check for updates
-defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
 
 # 2. Download new updates when available
-defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticDownload -bool true
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticDownload -bool true
 
 # 3. Install macOS updates (system data files & security updates)
-defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
 
 # 4. Install app updates from the App Store
-defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool true
+sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool true
 
 sudo mdutil -E /
 killall mds > /dev/null 2>&1; sudo mdutil -E /
