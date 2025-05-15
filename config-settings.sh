@@ -18,8 +18,8 @@ defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool false
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRotate -bool false
 
 # Enable Control Zoom Scrolling
-sudo defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
-sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+# sudo defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+# sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
 
 # Hide Spotlight Icon
 defaults write com.apple.controlcenter 'NSStatusItem Visible Siri' -bool true
@@ -35,40 +35,41 @@ osascript -e 'tell application "Finder" to set desktop picture to POSIX file "/S
 defaults write com.apple.dock orientation -string left
 defaults write com.apple.dock autohide -bool true
 defaults write com.apple.dock show-recents -bool false
-defaults write com.apple.WindowManager EnableStandardClickWallpaperToRevealDesktop -bool false
 defaults write com.apple.WindowManager EnableStageManagerClickWallpaperToRevealDesktop -bool true
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
+
 
 # Set bottom-right hot corner (corner 4) to Lock Screen (action 13)
 defaults write com.apple.dock wvous-br-corner -int 13
 defaults write com.apple.dock wvous-br-modifier -int 0
 
 # Enable Night Shift automatic schedule (sunrise to sunset)
-defaults write com.apple.CoreBrightness CBBlueReductionAutoScheduleEnabled -bool true
-defaults write com.apple.CoreBrightness CBBlueReductionScheduleType -int 1
+# defaults write com.apple.CoreBrightness CBBlueReductionAutoScheduleEnabled -bool true
+# defaults write com.apple.CoreBrightness CBBlueReductionScheduleType -int 1
 
 ## Spotlight
-defaults write com.apple.spotlight orderedItems -array \
-  '{"enabled" = 1; "name" = "APPLICATIONS";}' \
-  '{"enabled" = 1; "name" = "SYSTEM_PREFS";}' \
-  '{"enabled" = 1; "name" = "MENU_DEFINITION";}' \
-  '{"enabled" = 1; "name" = "MENU_CONVERSION";}' \
-  '{"enabled" = 1; "name" = "MENU_EXPRESSION";}'
+# defaults write com.apple.spotlight orderedItems -array \
+#   '{"enabled" = 1; "name" = "APPLICATIONS";}' \
+#   '{"enabled" = 1; "name" = "SYSTEM_PREFS";}' \
+#   '{"enabled" = 1; "name" = "MENU_DEFINITION";}' \
+#   '{"enabled" = 1; "name" = "MENU_CONVERSION";}' \
+#   '{"enabled" = 1; "name" = "MENU_EXPRESSION";}'
 
 # Disable indexing for common content folders
-sudo mdutil -i off ~/Documents
-sudo mdutil -i off ~/Downloads
-sudo mdutil -i off ~/Pictures
-sudo mdutil -i off ~/Music
-sudo mdutil -i off ~/Movies
-sudo mdutil -i off ~/Library/Mail
-sudo mdutil -i off ~/Library/Calendars
-sudo mdutil -i off ~/Library/Contacts
-sudo mdutil -i off /Library/Fonts
+# sudo mdutil -i off ~/Documents
+# sudo mdutil -i off ~/Downloads
+# sudo mdutil -i off ~/Pictures
+# sudo mdutil -i off ~/Music
+# sudo mdutil -i off ~/Movies
+# sudo mdutil -i off ~/Library/Mail
+# sudo mdutil -i off ~/Library/Calendars
+# sudo mdutil -i off ~/Library/Contacts
+# sudo mdutil -i off /Library/Fonts
 
 # Disable Improving Search
-defaults write com.apple.assistant.support "Siri Data Sharing Opt-In Status" -int 2
-defaults write com.apple.assistant.support "Assistant Enabled" -bool false
-defaults write com.apple.assistant.support "SiriServerLoggingEnabled" -bool false
+# defaults write com.apple.assistant.support "Siri Data Sharing Opt-In Status" -int 2
+# defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+# defaults write com.apple.assistant.support "SiriServerLoggingEnabled" -bool false
 
 # Fastest key repeat rate
 defaults write -g KeyRepeat -int 1
